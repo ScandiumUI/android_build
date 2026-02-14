@@ -35,6 +35,7 @@ PRODUCT_PACKAGES += \
     Music \
     PdfViewerGOS \
     preinstalled-packages-platform-handheld-product.xml \
+    SpeechServicesApp
     SettingsIntelligence \
     ThemePicker \
     ThemesStub \
