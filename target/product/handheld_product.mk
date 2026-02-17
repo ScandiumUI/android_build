@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2019 The Android Open Source Project
+# Copyright (C) 2024-2026 The ScandiumUI Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +21,12 @@
 # does, use base_product.mk).
 $(call inherit-product, $(SRC_TARGET_DIR)/product/media_product.mk)
 
+# Inherit ScandiumUI product partition additions (if vendor tree present)
+$(call inherit-product-if-exists, vendor/scandium/config/product.mk)
+
 # /product packages
+# Packages marked [GrapheneOS] are inherited from the GrapheneOS base.
+# Packages marked [ScandiumUI] are specific to ScandiumUI.
 PRODUCT_PACKAGES += \
     AppStore \
     Auditor \
