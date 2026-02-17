@@ -2,6 +2,10 @@
 # It sets up standard variables based on the
 # current configuration and platform, which
 # are not specific to what is being built.
+#
+# Copyright (C) 2008 The Android Open Source Project
+# Copyright (C) 2024-2026 The ScandiumUI Project
+#
 
 ifndef KATI
 $(warning Directly using config.mk from make is no longer supported.)
@@ -21,12 +25,6 @@ BUILD_SYSTEM :=$= build/make/core
 BUILD_SYSTEM_COMMON :=$= build/make/common
 
 include $(BUILD_SYSTEM_COMMON)/core.mk
-
-# -----------------------------------------------------------------
-# Rules and functions to help copy important files to DIST_DIR
-# when requested. This must be included once only, and must be included before
-# soong_config (as soong_config calls make_vars-$(TARGET).mk, and soong may
-# propagate calls to dist-for-goals there).
 include $(BUILD_SYSTEM)/distdir.mk
 
 # Mark variables that should be coming as environment variables from soong_ui
@@ -191,6 +189,32 @@ SRC_TARGET_DIR := $(TOPDIR)build/make/target
 # Some specific paths to tools
 SRC_DROIDDOC_DIR := $(TOPDIR)build/make/tools/droiddoc
 
+SCANDIUM_VENDOR_DIR := $(TOPDIR)vendor/scandium
+
+# =========================================================================
+# ScandiumUI Vendor Integration
+# =========================================================================
+# ScandiumUI is based on GrapheneOS (which is based on AOSP).
+# The vendor tree (vendor/scandium) contains device-specific configs,
+# overlays, and ScandiumUI-specific build tasks. All includes are
+# conditional (-include) so the build works without the vendor tree.
+# =========================================================================
+
+# Board-level configuration (kernel, SELinux, partitions)
+-include $(SCANDIUM_VENDOR_DIR)/config/BoardConfigScandium.mk
+
+# Vendor build system core configuration
+-include $(SCANDIUM_VENDOR_DIR)/build/core/config.mk
+
+# ScandiumUI-specific Make definitions (uniq macro, utilities)
+-include $(SCANDIUM_VENDOR_DIR)/build/core/definitions.mk
+
+# ScandiumUI pathmap extensions (additional source tree mappings)
+-include $(SCANDIUM_VENDOR_DIR)/build/core/pathmap.mk
+
+# Vendor Soong configuration injection
+-include $(SCANDIUM_VENDOR_DIR)/config/BoardConfigSoong.mk
+
 # Mark some inputs as readonly
 ifdef TARGET_DEVICE_DIR
   .KATI_READONLY := TARGET_DEVICE_DIR
@@ -212,10 +236,6 @@ include $(BUILD_SYSTEM)/pathmap.mk
 
 # Allow projects to define their own globally-available variables
 include $(BUILD_SYSTEM)/project_definitions.mk
-
-# ###############################################################
-# Build system internal files
-# ###############################################################
 
 BUILD_COMBOS :=$= $(BUILD_SYSTEM)/combo
 
@@ -246,25 +266,14 @@ BUILD_SBOM_GEN :=$= $(BUILD_SYSTEM)/sbom.mk
 
 include $(BUILD_SYSTEM)/deprecation.mk
 
-# ###############################################################
-# Parse out any modifier targets.
-# ###############################################################
-
 hide := @
 
-################################################################
-# Tools needed in product configuration makefiles.
-################################################################
 NORMALIZE_PATH := build/make/tools/normalize_path.py
 
 # $(1): the paths to be normalized
 define normalize-paths
 $(if $(1),$(shell $(NORMALIZE_PATH) $(1)))
 endef
-
-# ###############################################################
-# Set common values
-# ###############################################################
 
 # Initialize SOONG_CONFIG_NAMESPACES so that it isn't recursive.
 SOONG_CONFIG_NAMESPACES :=
@@ -401,10 +410,6 @@ _build_broken_list_vars := \
 _build_broken_var_names := $(_build_broken_bool_vars)
 _build_broken_var_names += $(_build_broken_list_vars)
 $(foreach v,$(_build_broken_var_names),$(eval $(v) :=))
-
-# ###############################################################
-# Include sub-configuration files
-# ###############################################################
 
 # ---------------------------------------------------------------
 # Try to include buildspec.mk, which will try to set stuff up.
@@ -1058,10 +1063,6 @@ endif # BOARD_KERNEL_MODULES_16K
 BOARD_PREBUILT_HIDDENAPI_DIR ?=
 .KATI_READONLY := BOARD_PREBUILT_HIDDENAPI_DIR
 
-# ###############################################################
-# Set up final options.
-# ###############################################################
-
 # We run gcc/clang with PWD=/proc/self/cwd to remove the $TOP
 # from the debug output. That way two builds in two different
 # directories will create the same output.
@@ -1085,11 +1086,6 @@ $(TARGET_2ND_ARCH_VAR_PREFIX)DEX2OAT_TARGET_CPU_VARIANT := $(call first_non_empt
 $(TARGET_2ND_ARCH_VAR_PREFIX)DEX2OAT_TARGET_CPU_VARIANT_RUNTIME := $(call first_non_empty_of_three,$(TARGET_2ND_CPU_VARIANT_RUNTIME),$(TARGET_2ND_ARCH_VARIANT),default)
 $(TARGET_2ND_ARCH_VAR_PREFIX)DEX2OAT_TARGET_INSTRUCTION_SET_FEATURES := default
 endif
-
-# ###############################################################
-# Collect a list of the SDK versions that we could compile against
-# For use with the LOCAL_SDK_VERSION variable for include $(BUILD_PACKAGE)
-# ###############################################################
 
 HISTORICAL_SDK_VERSIONS_ROOT := $(TOPDIR)prebuilts/sdk
 HISTORICAL_NDK_VERSIONS_ROOT := $(TOPDIR)prebuilts/ndk
@@ -1334,3 +1330,17 @@ endif
 # unset it for safety.
 BUILD_THUMBPRINT_FILE :=
 BUILD_THUMBPRINT :=
+
+# =========================================================================
+# ScandiumUI Build Tasks
+# =========================================================================
+# Include ScandiumUI OTA packaging (bacon), kernel compilation,
+# device-tree image generation, and build manifest tasks.
+# These are provided by vendor/scandium/build/tasks/ and are
+# conditionally included so builds work without the vendor tree.
+# =========================================================================
+-include $(SCANDIUM_VENDOR_DIR)/build/tasks/bacon.mk
+-include $(SCANDIUM_VENDOR_DIR)/build/tasks/kernel.mk
+-include $(SCANDIUM_VENDOR_DIR)/build/tasks/dt_image.mk
+-include $(SCANDIUM_VENDOR_DIR)/build/tasks/build-manifest_xml.mk
+-include $(SCANDIUM_VENDOR_DIR)/build/tasks/generate_json_build_info.mk
