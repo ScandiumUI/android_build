@@ -139,7 +139,7 @@ else
 endif
 .KATI_READONLY := SCANDIUM_MAKE_JOBS
 
-$(info [ScandiumUI Perf] Parallel build jobs: $(SCANDIUM_MAKE_JOBS))
+$(info   ✓  [ScandiumUI Perf] Parallel build jobs: $(SCANDIUM_MAKE_JOBS) cores)
 
 ifeq ($(SCANDIUM_FLAG_PERF_CCACHE),true)
   USE_CCACHE := 1
@@ -159,7 +159,7 @@ ADDITIONAL_SYSTEM_PROPERTIES += \
     ro.scandium.perf.opt_level=$(SCANDIUM_PERF_OPT_LEVEL) \
     ro.scandium.perf.make_jobs=$(SCANDIUM_MAKE_JOBS) \
     ro.scandium.perf.art_boot_profile=$(SCANDIUM_FLAG_PERF_ART_BOOT_PROFILE)
-	
+
 .KATI_READONLY := SCANDIUM_PERF_CFLAGS
 .KATI_READONLY := SCANDIUM_PERF_LDFLAGS
 .KATI_READONLY := SCANDIUM_PERF_OPT_LEVEL
