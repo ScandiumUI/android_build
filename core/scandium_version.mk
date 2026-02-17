@@ -99,14 +99,32 @@ ifneq ($(SCANDIUM_BUILD),true)
       ro.scandium.feature.gmscompat=$(SCANDIUM_FEATURE_GMSCOMPAT)
 endif
 
-# Prevent downstream makefiles from silently overwriting core identity.
-.KATI_READONLY := SCANDIUM_VERSION_NUMBER
-.KATI_READONLY := SCANDIUM_DISPLAY_VERSION
-.KATI_READONLY := SCANDIUM_BUILD_FINGERPRINT
-.KATI_READONLY := SCANDIUM_BUILD_DATE
-.KATI_READONLY := SCANDIUM_BUILD_TIMESTAMP
-.KATI_READONLY := SCANDIUM_OTA_CHANNEL
-.KATI_READONLY := SCANDIUM_OTA_BASE_URL
+# -------------------------------------------------------------------------
+# Readonly enforcement for computed version vars
+# -------------------------------------------------------------------------
+# Use ifdef guards so KATI_READONLY is only applied when the variable
+# has actually been set. version_util.mk also guards these the same way.
+ifdef SCANDIUM_VERSION_NUMBER
+  .KATI_READONLY := SCANDIUM_VERSION_NUMBER
+endif
+ifdef SCANDIUM_DISPLAY_VERSION
+  .KATI_READONLY := SCANDIUM_DISPLAY_VERSION
+endif
+ifdef SCANDIUM_BUILD_FINGERPRINT
+  .KATI_READONLY := SCANDIUM_BUILD_FINGERPRINT
+endif
+ifdef SCANDIUM_BUILD_DATE
+  .KATI_READONLY := SCANDIUM_BUILD_DATE
+endif
+ifdef SCANDIUM_BUILD_TIMESTAMP
+  .KATI_READONLY := SCANDIUM_BUILD_TIMESTAMP
+endif
+ifdef SCANDIUM_OTA_CHANNEL
+  .KATI_READONLY := SCANDIUM_OTA_CHANNEL
+endif
+ifdef SCANDIUM_OTA_BASE_URL
+  .KATI_READONLY := SCANDIUM_OTA_BASE_URL
+endif
 
 # When SCANDIUM_BUILD=true, vendor/scandium/config/version.mk overrides
 # the computed values above with full version info including display
