@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2018 The Android Open Source Project
+# Copyright (C) 2024-2026 The ScandiumUI Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,6 +34,19 @@ $(call inherit-product-if-exists, external/hyphenation-patterns/patterns.mk)
 $(call inherit-product-if-exists, frameworks/base/data/keyboards/keyboards.mk)
 $(call inherit-product-if-exists, frameworks/webview/chromium/chromium.mk)
 
+# =========================================================================
+# ScandiumUI Vendor Configuration
+# =========================================================================
+# Inherit ScandiumUI common config from vendor tree (if present).
+# This sets SCANDIUM_BUILD=true, adds ScandiumUI packages, overlays,
+# boot animation, and system properties.
+$(call inherit-product-if-exists, vendor/scandium/config/common.mk)
+# Inherit ScandiumUI system partition additions (if present).
+$(call inherit-product-if-exists, vendor/scandium/config/system.mk)
+
+# System partition packages for handheld devices.
+# Packages marked [GrapheneOS] are inherited from the GrapheneOS base and
+# provide privacy/security enhancements unique to this ROM family.
 PRODUCT_PACKAGES += \
     android.software.window_magnification.prebuilt.xml \
     BasicDreams \
