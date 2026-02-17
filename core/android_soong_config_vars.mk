@@ -1,4 +1,5 @@
 # Copyright (C) 2020 The Android Open Source Project
+# Copyright (C) 2024-2026 The ScandiumUI Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,6 +15,9 @@
 
 # This file defines the Soong Config Variable namespace ANDROID, and also any
 # variables in that namespace.
+#
+# ScandiumUI also registers its own Soong config namespace (SCANDIUM) for
+# ROM-level feature toggles consumed by Soong modules in the vendor tree.
 
 # The expectation is that no vendor should be using the ANDROID namespace. This
 # check ensures that we don't collide with any existing vendor usage.
@@ -490,3 +494,38 @@ $(call soong_config_set_bool,tradefed,use_prebuilt,true)
 else
 $(call soong_config_set_bool,tradefed,use_prebuilt,false)
 endif
+
+# The SCANDIUM namespace exports ROM-level feature flags to Soong modules
+# in the vendor tree and platform. These mirror the Make-side flags
+# defined in core/scandium_version.mk and vendor/scandium/config/*.mk.
+#
+# The scandiumVarsPlugin, scandium_bootanimation, scandium_charger,
+# scandium_health, and other vendor-specific namespaces are registered
+# by vendor/scandium/config/BoardConfigSoong.mk (included via config.mk).
+$(call add_soong_config_namespace,SCANDIUM)
+
+# Whether this is a full ScandiumUI build (vendor tree present)
+$(call soong_config_set_bool,SCANDIUM,is_scandium_build,$(if $(filter true,$(SCANDIUM_BUILD)),true,false))
+
+# ScandiumUI edition (professional, casual, academy)
+ifdef SCANDIUM_EDITION
+$(call soong_config_set,SCANDIUM,edition,$(SCANDIUM_EDITION_LC))
+endif
+
+# ScandiumUI build type (cookie, snapshot, experimental)
+ifdef SCANDIUM_BUILDTYPE
+$(call soong_config_set,SCANDIUM,build_type,$(SCANDIUM_BUILDTYPE_LC))
+endif
+
+# ScandiumUI branch / codename
+ifdef SCANDIUM_BRANCH
+$(call soong_config_set,SCANDIUM,branch,$(SCANDIUM_BRANCH))
+endif
+
+# GrapheneOS feature flags — expose to Soong for conditional compilation
+$(call soong_config_set_bool,SCANDIUM,feature_gmscompat,$(if $(filter true,$(SCANDIUM_FEATURE_GMSCOMPAT)),true,false))
+$(call soong_config_set_bool,SCANDIUM,feature_exec_spawning,$(if $(filter true,$(SCANDIUM_FEATURE_EXEC_SPAWNING)),true,false))
+$(call soong_config_set_bool,SCANDIUM,feature_hardened_malloc,$(if $(filter true,$(SCANDIUM_FEATURE_HARDENED_MALLOC)),true,false))
+$(call soong_config_set_bool,SCANDIUM,feature_network_permission,$(if $(filter true,$(SCANDIUM_FEATURE_NETWORK_PERMISSION)),true,false))
+$(call soong_config_set_bool,SCANDIUM,feature_sensor_permission,$(if $(filter true,$(SCANDIUM_FEATURE_SENSOR_PERMISSION)),true,false))
+$(call soong_config_set_bool,SCANDIUM,feature_storage_scopes,$(if $(filter true,$(SCANDIUM_FEATURE_STORAGE_SCOPES)),true,false))
