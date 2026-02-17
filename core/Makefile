@@ -8208,4 +8208,9 @@ endif # ifdef SOONG_ONLY_ALL_IMAGES_ZIP
 
 include $(BUILD_SYSTEM)/os_licensing.mk
 
+# -----------------------------------------------------------------
+# ScandiumUI — additional packaging and post-processing
+# Include vendor-specific packaging tasks (OTA zip, build manifest, etc.)
+-include $(TOPDIR)vendor/scandium/build/core/Makefile
+
 # When appending new code to this file, please insert above OS Licensing
