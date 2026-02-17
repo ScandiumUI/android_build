@@ -5,6 +5,10 @@ $(error done)
 endif
 
 $(info [1/1] initializing Make module parser ...)
+$(info )
+$(info ┌─────────────────────────────────────────────────────────────┐)
+$(info │            ScandiumUI Build System Starting                 │)
+$(info └─────────────────────────────────────────────────────────────┘)
 
 # Absolute path of the present working direcotry.
 # This overrides the shell variable $PWD, which does not necessarily points to
@@ -86,34 +90,110 @@ $(KATI_obsolete_var ADDITIONAL_BUILD_PROPERTIES, Please use ADDITIONAL_SYSTEM_PR
 # Bring in standard build system definitions.
 include $(BUILD_SYSTEM)/definitions.mk
 
+$(info )
+$(info ┌──────────────────────────────────────────────────────────────────┐)
+$(info │  [STEP 1/6] Loading ScandiumUI Version & Identity ...            │)
+$(info └──────────────────────────────────────────────────────────────────┘)
+
 # 1. Version & identity
 -include $(BUILD_SYSTEM)/scandium_version.mk
+
+$(info   ✓  Version     : $(SCANDIUM_VERSION_NUMBER))
+$(info   ✓  Build ID    : $(SCANDIUM_BUILD_ID))
+$(info   ✓  Edition     : $(SCANDIUM_EDITION))
+$(info   ✓  Branch      : $(SCANDIUM_BRANCH))
+$(info   ✓  Build type  : $(SCANDIUM_BUILDTYPE))
+$(info   ✓  Base ROM    : $(SCANDIUM_BASE_ROM) $(SCANDIUM_BASE_ROM_VERSION))
+$(info )
+$(info ┌──────────────────────────────────────────────────────────────────┐)
+$(info │  [STEP 2/6] Loading Build Utility Functions ...                  │)
+$(info └──────────────────────────────────────────────────────────────────┘)
 
 # 2. Utility functions (must come before any sc-* calls)
 -include $(BUILD_SYSTEM)/scandium_build_utils.mk
 
+$(info   ✓  sc-version-gte / sc-version-bump-patch)
+$(info   ✓  sc-flag-enabled / sc-flag-any-enabled / sc-flag-all-enabled)
+$(info   ✓  sc-assert-nonempty / sc-assert-one-of / sc-assert-file-exists)
+$(info   ✓  sc-add-system-prop / sc-add-product-prop / sc-add-vendor-prop)
+$(info   ✓  sc-info / sc-warn / sc-step / sc-if-edition / sc-is-release)
+$(info )
+$(info ┌──────────────────────────────────────────────────────────────────┐)
+$(info │  [STEP 3/6] Loading Feature Flags ...                            │)
+$(info └──────────────────────────────────────────────────────────────────┘)
+
 # 3. Feature flags
 -include $(BUILD_SYSTEM)/scandium_flags.mk
+
+$(info   ✓  CORE    : enabled=$(SCANDIUM_FLAG_CORE_ENABLED))
+$(info   ✓  SECURITY: hardening=$(SCANDIUM_FLAG_SEC_COMPILER_HARDENING) cfi=$(SCANDIUM_FLAG_SEC_CFI) mte=$(SCANDIUM_FLAG_SEC_MTE) scs=$(SCANDIUM_FLAG_SEC_SHADOW_CALL_STACK))
+$(info   ✓  PRIVACY : mac_rand=$(SCANDIUM_FLAG_PRIV_MAC_RANDOMIZE) no_adid=$(SCANDIUM_FLAG_PRIV_DISABLE_ADID) logcat=$(SCANDIUM_FLAG_PRIV_MINIMAL_LOGCAT))
+$(info   ✓  PERF    : lto=$(SCANDIUM_FLAG_PERF_LTO) pgo=$(SCANDIUM_FLAG_PERF_PGO) polly=$(SCANDIUM_FLAG_PERF_POLLY) zram=$(SCANDIUM_FLAG_PERF_ZRAM)[$(SCANDIUM_FLAG_PERF_ZRAM_ALGO)])
+$(info   ✓  UX      : high_rr=$(SCANDIUM_FLAG_UX_HIGH_REFRESH_RATE) blur=$(SCANDIUM_FLAG_UX_BLUR) haptics=$(SCANDIUM_FLAG_UX_HAPTICS))
+$(info   ✓  OTA     : enabled=$(SCANDIUM_FLAG_OTA_ENABLED) incremental=$(SCANDIUM_FLAG_OTA_INCREMENTAL))
+$(info )
+$(info ┌──────────────────────────────────────────────────────────────────┐)
+$(info │  [STEP 4/6] Applying Security Hardening ...                      │)
+$(info └──────────────────────────────────────────────────────────────────┘)
 
 # 4. Security hardening
 -include $(BUILD_SYSTEM)/scandium_security.mk
 
+$(info   ✓  Compiler flags   : $(SCANDIUM_HARDENING_CFLAGS))
+$(info   ✓  Linker flags     : $(SCANDIUM_HARDENING_LDFLAGS))
+$(info   ✓  SELinux mode     : $(SCANDIUM_SELINUX_POLICY_MODE))
+$(info   ✓  Verified boot    : $(SCANDIUM_VERIFIED_BOOT_ACTIVE))
+$(info   ✓  KASLR required   : $(SCANDIUM_REQUIRE_KASLR))
+$(info   ✓  Full hardening   : $(SCANDIUM_FULL_SECURITY_HARDENING))
+$(info )
+$(info ┌──────────────────────────────────────────────────────────────────┐)
+$(info │  [STEP 5/6] Applying Performance Optimizations ...               │)
+$(info └──────────────────────────────────────────────────────────────────┘)
+
 # 5. Performance optimisations
 -include $(BUILD_SYSTEM)/scandium_perf.mk
+
+$(info   ✓  Opt level        : $(SCANDIUM_PERF_OPT_LEVEL))
+$(info   ✓  LTO mode         : $(if $(filter true,$(SCANDIUM_FLAG_PERF_LTO)),$(SCANDIUM_LTO_MODE),disabled))
+$(info   ✓  PGO              : $(SCANDIUM_FLAG_PERF_PGO))
+$(info   ✓  Polly vectoriser : $(SCANDIUM_FLAG_PERF_POLLY))
+$(info   ✓  ZRAM             : $(SCANDIUM_FLAG_PERF_ZRAM) [algo=$(SCANDIUM_FLAG_PERF_ZRAM_ALGO)])
+$(info   ✓  Dexpreopt system : $(if $(filter true,$(SCANDIUM_FLAG_PERF_DEXPREOPT_SYSTEM)),$(SCANDIUM_DEXPREOPT_SYSTEM_FILTER),disabled))
+$(info   ✓  Dexpreopt priv   : $(if $(filter true,$(SCANDIUM_FLAG_PERF_DEXPREOPT_PRIV)),$(SCANDIUM_DEXPREOPT_PRIV_FILTER),disabled))
+$(info   ✓  Make jobs        : $(SCANDIUM_MAKE_JOBS))
+$(info )
+$(info ┌──────────────────────────────────────────────────────────────────┐)
+$(info │  [STEP 6/6] Injecting System Properties ...                      │)
+$(info └──────────────────────────────────────────────────────────────────┘)
 
 # 6. System properties injection
 -include $(BUILD_SYSTEM)/scandium_props.mk
 
+$(info   ✓  ro.scandium.*         → system partition)
+$(info   ✓  ro.scandium.*         → product partition)
+$(info   ✓  ro.scandium.*         → vendor partition)
+$(info   ✓  persist.scandium.*    → persist storage)
+$(info )
+
 # Print ScandiumUI build banner when version info is available
 ifdef SCANDIUM_BUILD_ID
-$(info )
-$(info   Version   : $(SCANDIUM_VERSION_NUMBER) ($(SCANDIUM_BUILD_ID)))
-$(info   Edition   : $(SCANDIUM_EDITION))
-$(info   Branch    : $(SCANDIUM_BRANCH))
-$(info   Type      : $(SCANDIUM_BUILDTYPE))
-$(info   Base ROM  : $(SCANDIUM_BASE_ROM))
-$(info   Security  : hardening=$(SCANDIUM_FLAG_SEC_COMPILER_HARDENING) cfi=$(SCANDIUM_FLAG_SEC_CFI) mte=$(SCANDIUM_FLAG_SEC_MTE))
-$(info   Perf      : lto=$(SCANDIUM_FLAG_PERF_LTO) pgo=$(SCANDIUM_FLAG_PERF_PGO) zram=$(SCANDIUM_FLAG_PERF_ZRAM))
+$(info ┌──────────────────────────────────────────────────────────────────┐)
+$(info │                  ScandiumUI Build Ready                          │)
+$(info ├──────────────────────────────────────────────────────────────────┤)
+$(info │  Version     : $(SCANDIUM_VERSION_NUMBER) ($(SCANDIUM_BUILD_ID))))
+$(info │  Display     : $(SCANDIUM_DISPLAY_VERSION))
+$(info │  Edition     : $(SCANDIUM_EDITION))
+$(info │  Branch      : $(SCANDIUM_BRANCH))
+$(info │  Build type  : $(SCANDIUM_BUILDTYPE))
+$(info │  Base ROM    : $(SCANDIUM_BASE_ROM) $(SCANDIUM_BASE_ROM_VERSION))
+$(info │  Target      : $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT))
+$(info │  Arch        : $(TARGET_ARCH) / $(TARGET_ARCH_VARIANT))
+$(info ├──────────────────────────────────────────────────────────────────┤)
+$(info │  Security    : hardening=$(SCANDIUM_FLAG_SEC_COMPILER_HARDENING) cfi=$(SCANDIUM_FLAG_SEC_CFI) mte=$(SCANDIUM_FLAG_SEC_MTE) scs=$(SCANDIUM_FLAG_SEC_SHADOW_CALL_STACK))
+$(info │  Privacy     : mac_rand=$(SCANDIUM_FLAG_PRIV_MAC_RANDOMIZE) no_adid=$(SCANDIUM_FLAG_PRIV_DISABLE_ADID))
+$(info │  Performance : lto=$(SCANDIUM_FLAG_PERF_LTO) pgo=$(SCANDIUM_FLAG_PERF_PGO) zram=$(SCANDIUM_FLAG_PERF_ZRAM) jobs=$(SCANDIUM_MAKE_JOBS))
+$(info │  OTA         : channel=$(SCANDIUM_OTA_CHANNEL) url=$(SCANDIUM_OTA_BASE_URL))
+$(info └──────────────────────────────────────────────────────────────────┘)
 $(info )
 endif
 
@@ -329,9 +409,7 @@ include_makefiles_total := $(words init post finish)
 endif
 
 $(info [$(include_makefiles_total)/$(include_makefiles_total)] finishing Make module rules ...)
-
-# -------------------------------------------------------------------
-# All module makefiles have been included at this point.
+$(info   ✓  [ScandiumUI] All module makefiles loaded)
 # -------------------------------------------------------------------
 
 # -------------------------------------------------------------------
@@ -551,6 +629,7 @@ $(1): $(2)
 endef
 
 $(info [$(include_makefiles_total)/$(include_makefiles_total)] finishing Make module rules: Adding module dependencies)
+$(info   ✓  [ScandiumUI] Resolving inter-module dependencies ...)
 
 # Sets up dependencies such that whenever a host module is installed,
 # any other host modules listed in $(ALL_MODULES.$(m).REQUIRED_FROM_HOST) will also be installed
@@ -1227,6 +1306,7 @@ modules_to_install := $(sort $(ALL_DEFAULT_INSTALLED_MODULES))
 ALL_DEFAULT_INSTALLED_MODULES :=
 
 $(info [$(include_makefiles_total)/$(include_makefiles_total)] finishing Make packaging rules: Adding phony targets)
+$(info   ✓  [ScandiumUI] Registering phony build targets ...)
 
 ifdef FULL_BUILD
 #
@@ -1689,6 +1769,7 @@ ifneq ($(UNSAFE_DISABLE_APEX_ALLOWED_DEPS_CHECK),true)
 endif
 
 $(info [$(include_makefiles_total)/$(include_makefiles_total)] finishing Make packaging rules: Checking licensing and SBOM)
+$(info   ✓  [ScandiumUI] Verifying licenses & generating SBOM ...)
 
 # Create a license metadata rule per module. Could happen in base_rules.mk or
 # notice_files.mk; except, it has to happen after fix-notice-deps to avoid
@@ -1915,6 +1996,13 @@ $(PRODUCT_OUT)/always_dirty_file.txt:
 $(call dist-write-file,$(KATI_PACKAGE_MK_DIR)/dist.mk)
 
 $(info [$(include_makefiles_total)/$(include_makefiles_total)] writing make module actions ...)
+$(info )
+$(info ┌──────────────────────────────────────────────────────────────────┐)
+$(info │  [ScandiumUI] Build graph fully resolved. Starting compilation.  │)
+$(info │  Target   : $(TARGET_PRODUCT)-$(TARGET_BUILD_VARIANT))
+$(info │  Out dir  : $(OUT_DIR))
+$(info └──────────────────────────────────────────────────────────────────┘)
+$(info )
 
 # =========================================================================
 # ScandiumUI Build Targets
