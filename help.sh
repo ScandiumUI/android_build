@@ -14,6 +14,11 @@ source build/envsetup.sh    # Add "lunch" (and other utilities and variables)
 lunch [<product>-<variant>] # Choose the device to target.
 m [<goals>]                 # Execute the configured build.
 
+ScandiumUI (based on GrapheneOS) adds:
+    breakfast <device>      # Configure a device for ScandiumUI
+    brunch <device>         # Build a complete ScandiumUI image
+    mka bacon               # Generate the OTA-flashable zip package
+
 Usage of "m" imitates usage of the program "make".
 See '"${SCRIPT_DIR}"'/Usage.txt for more info about build usage and concepts.
 
@@ -56,6 +61,12 @@ Common goals are:
                             Stands for "OdmDlkm, NO Dependencies"
     sdnod                   Quickly rebuild the system_dlkm image from built packages
                             Stands for "SystemDlkm, NO Dependencies"
+
+ScandiumUI-specific goals:
+
+    scandium                Alias for the default "droid" build target
+    scandium-info           Print ScandiumUI version, edition, and build info
+    bacon                   Generate the OTA-flashable zip (from vendor tree)
 
 
 So, for example, you could run:
