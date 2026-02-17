@@ -109,4 +109,4 @@ ifneq ($(TARGET_BUILD_VARIANT),user)
       ro.scandium.debug.build_variant=$(TARGET_BUILD_VARIANT)
 endif
 
-$(info [ScandiumUI Props] All ScandiumUI properties injected into system/product/vendor partitions.)
+$(info   ✓  [ScandiumUI Props] Properties injected → system / product / vendor / persist)
