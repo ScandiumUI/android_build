@@ -1,4 +1,5 @@
 # Copyright (C) 2022 The Android Open Source Project
+# Copyright (C) 2024-2026 The ScandiumUI Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1242,3 +1243,15 @@ echo "export BUILD_DATETIME=$BUILD_DATETIME BUILD_NUMBER=$BUILD_NUMBER"
 alias adevtool='vendor/adevtool/bin/run'
 alias adto='vendor/adevtool/bin/run'
 
+# =========================================================================
+# ScandiumUI Build Environment Integration
+# =========================================================================
+# ScandiumUI is based on GrapheneOS (AOSP).
+# Source vendor/scandium/build/envsetup.sh if the vendor tree is present.
+# This adds ScandiumUI-specific functions: breakfast, brunch, eat, omnom,
+# scandiumgerrit, scandiumrebase, scandiumremote, mka, repopick,
+# setedition, build_kernel, and more.
+# =========================================================================
+if [ -f "$(gettop)/vendor/scandium/build/envsetup.sh" ]; then
+    source "$(gettop)/vendor/scandium/build/envsetup.sh"
+fi
