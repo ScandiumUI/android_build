@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2008 The Android Open Source Project
+# Copyright (C) 2024-2026 The ScandiumUI Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,6 +50,34 @@ ifeq ($(BUILD_ID),)
     include $(INTERNAL_BUILD_ID_MAKEFILE)
     ALLOW_BUILD_ID_MK_INCLUSION := 0
   endif
+endif
+
+# =========================================================================
+# ScandiumUI Version Guarantees
+# =========================================================================
+# SCANDIUM_BUILD_ID, SCANDIUM_BASE_ROM, and SCANDIUM_BASE_ROM_VERSION
+# are defined in core/build_id.mk. Export them as readonly so downstream
+# makefiles cannot accidentally overwrite them.
+ifdef SCANDIUM_BUILD_ID
+  .KATI_READONLY := SCANDIUM_BUILD_ID
+endif
+ifdef SCANDIUM_BASE_ROM
+  .KATI_READONLY := SCANDIUM_BASE_ROM
+endif
+ifdef SCANDIUM_BASE_ROM_VERSION
+  .KATI_READONLY := SCANDIUM_BASE_ROM_VERSION
+endif
+# SCANDIUM_VERSION_NUMBER, SCANDIUM_DISPLAY_VERSION, and
+# SCANDIUM_BUILD_FINGERPRINT are computed in scandium_version.mk
+# and made readonly once they are set.
+ifdef SCANDIUM_VERSION_NUMBER
+  .KATI_READONLY := SCANDIUM_VERSION_NUMBER
+endif
+ifdef SCANDIUM_DISPLAY_VERSION
+  .KATI_READONLY := SCANDIUM_DISPLAY_VERSION
+endif
+ifdef SCANDIUM_BUILD_FINGERPRINT
+  .KATI_READONLY := SCANDIUM_BUILD_FINGERPRINT
 endif
 
 ifdef TARGET_PLATFORM_VERSION
