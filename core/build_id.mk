@@ -5,6 +5,7 @@ ifneq ($(ALLOW_BUILD_ID_MK_INCLUSION), 1)
 endif
 #
 # Copyright (C) 2008 The Android Open Source Project
+# Copyright (C) 2024-2026 The ScandiumUI Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,9 +19,12 @@ endif
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# BUILD_ID is usually used to specify the branch name
-# (like "MAIN") or a branch name and a release candidate
-# (like "CRB01").  It must be a single word, and is
-# capitalized by convention.
 
 BUILD_ID=BP4A.251205.006
+
+# Format: SC<major>.<minor>.<patch>-<branch>
+# Bump major on platform upgrade, minor on feature release, patch on hotfix.
+SCANDIUM_BUILD_ID := SC4.0.0-cookie
+
+# Build epoch — monotonically increasing integer for OTA ordering
+SCANDIUM_BUILD_EPOCH := $(shell date -u +%s)
