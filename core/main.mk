@@ -86,25 +86,34 @@ $(KATI_obsolete_var ADDITIONAL_BUILD_PROPERTIES, Please use ADDITIONAL_SYSTEM_PR
 # Bring in standard build system definitions.
 include $(BUILD_SYSTEM)/definitions.mk
 
-# =========================================================================
-# ScandiumUI Build System — based on GrapheneOS / AOSP
-# =========================================================================
-# Include ScandiumUI version information, edition system, build type,
-# GrapheneOS feature flags, and OTA configuration.
-# This must come after definitions.mk so Make functions are available.
+# 1. Version & identity
 -include $(BUILD_SYSTEM)/scandium_version.mk
+
+# 2. Utility functions (must come before any sc-* calls)
+-include $(BUILD_SYSTEM)/scandium_build_utils.mk
+
+# 3. Feature flags
+-include $(BUILD_SYSTEM)/scandium_flags.mk
+
+# 4. Security hardening
+-include $(BUILD_SYSTEM)/scandium_security.mk
+
+# 5. Performance optimisations
+-include $(BUILD_SYSTEM)/scandium_perf.mk
+
+# 6. System properties injection
+-include $(BUILD_SYSTEM)/scandium_props.mk
 
 # Print ScandiumUI build banner when version info is available
 ifdef SCANDIUM_BUILD_ID
 $(info )
-$(info =========================================================)
-$(info   ScandiumUI Build System)
 $(info   Version   : $(SCANDIUM_VERSION_NUMBER) ($(SCANDIUM_BUILD_ID)))
 $(info   Edition   : $(SCANDIUM_EDITION))
 $(info   Branch    : $(SCANDIUM_BRANCH))
 $(info   Type      : $(SCANDIUM_BUILDTYPE))
 $(info   Base ROM  : $(SCANDIUM_BASE_ROM))
-$(info =========================================================)
+$(info   Security  : hardening=$(SCANDIUM_FLAG_SEC_COMPILER_HARDENING) cfi=$(SCANDIUM_FLAG_SEC_CFI) mte=$(SCANDIUM_FLAG_SEC_MTE))
+$(info   Perf      : lto=$(SCANDIUM_FLAG_PERF_LTO) pgo=$(SCANDIUM_FLAG_PERF_PGO) zram=$(SCANDIUM_FLAG_PERF_ZRAM))
 $(info )
 endif
 
