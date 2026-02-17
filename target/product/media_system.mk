@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2018 The Android Open Source Project
+# Copyright (C) 2024-2026 The ScandiumUI Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,6 +19,9 @@
 # media-capable devices (non-wearables). Only add something
 # here if it definitely doesn't belong on wearables. Otherwise,
 # choose base_system.mk.
+#
+# ScandiumUI: This inherits from GrapheneOS which adds Seedvault
+# backup and the ScandiumUI Updater for OTA support.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/base_system.mk)
 
 PRODUCT_PACKAGES += \
