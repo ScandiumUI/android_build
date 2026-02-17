@@ -86,6 +86,28 @@ $(KATI_obsolete_var ADDITIONAL_BUILD_PROPERTIES, Please use ADDITIONAL_SYSTEM_PR
 # Bring in standard build system definitions.
 include $(BUILD_SYSTEM)/definitions.mk
 
+# =========================================================================
+# ScandiumUI Build System — based on GrapheneOS / AOSP
+# =========================================================================
+# Include ScandiumUI version information, edition system, build type,
+# GrapheneOS feature flags, and OTA configuration.
+# This must come after definitions.mk so Make functions are available.
+-include $(BUILD_SYSTEM)/scandium_version.mk
+
+# Print ScandiumUI build banner when version info is available
+ifdef SCANDIUM_BUILD_ID
+$(info )
+$(info =========================================================)
+$(info   ScandiumUI Build System)
+$(info   Version   : $(SCANDIUM_VERSION_NUMBER) ($(SCANDIUM_BUILD_ID)))
+$(info   Edition   : $(SCANDIUM_EDITION))
+$(info   Branch    : $(SCANDIUM_BRANCH))
+$(info   Type      : $(SCANDIUM_BUILDTYPE))
+$(info   Base ROM  : $(SCANDIUM_BASE_ROM))
+$(info =========================================================)
+$(info )
+endif
+
 ifneq ($(filter user userdebug eng,$(MAKECMDGOALS)),)
 $(info ***************************************************************)
 $(info ***************************************************************)
@@ -1884,3 +1906,23 @@ $(PRODUCT_OUT)/always_dirty_file.txt:
 $(call dist-write-file,$(KATI_PACKAGE_MK_DIR)/dist.mk)
 
 $(info [$(include_makefiles_total)/$(include_makefiles_total)] writing make module actions ...)
+
+# =========================================================================
+# ScandiumUI Build Targets
+# =========================================================================
+# 'scandium' is an alias for the default droid target, providing a
+# recognisable entry point for ScandiumUI developers.
+# 'bacon' is provided by vendor/scandium/build/tasks/bacon.mk and
+# generates the OTA-flashable zip package.
+.PHONY: scandium
+scandium: droid
+
+.PHONY: scandium-info
+scandium-info:
+	$(info ScandiumUI $(SCANDIUM_VERSION_NUMBER) $(SCANDIUM_EDITION) [$(SCANDIUM_BUILDTYPE)])
+	$(info Build ID     : $(SCANDIUM_BUILD_ID))
+	$(info Branch       : $(SCANDIUM_BRANCH))
+	$(info Base ROM     : $(SCANDIUM_BASE_ROM) $(SCANDIUM_BASE_ROM_VERSION))
+	$(info Fingerprint  : $(SCANDIUM_BUILD_FINGERPRINT))
+	$(info Display      : $(SCANDIUM_DISPLAY_VERSION))
+	$(info OTA Channel  : $(SCANDIUM_OTA_CHANNEL))
