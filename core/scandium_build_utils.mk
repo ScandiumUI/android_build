@@ -46,13 +46,13 @@ $(strip \
   $(eval _sc_v2_min := $(call sc-version-split-minor,$(2))) \
   $(eval _sc_v1_pat := $(call sc-version-split-patch,$(1))) \
   $(eval _sc_v2_pat := $(call sc-version-split-patch,$(2))) \
-  $(if $(call math_gte_int,$(_sc_v1_maj),$(_sc_v2_maj)), \
-    $(if $(call math_gt_int,$(_sc_v1_maj),$(_sc_v2_maj)), \
+  $(if $(call math_gt_or_eq,$(_sc_v1_maj),$(_sc_v2_maj)), \
+    $(if $(call math_gt,$(_sc_v1_maj),$(_sc_v2_maj)), \
       true, \
-      $(if $(call math_gte_int,$(_sc_v1_min),$(_sc_v2_min)), \
-        $(if $(call math_gt_int,$(_sc_v1_min),$(_sc_v2_min)), \
+      $(if $(call math_gt_or_eq,$(_sc_v1_min),$(_sc_v2_min)), \
+        $(if $(call math_gt,$(_sc_v1_min),$(_sc_v2_min)), \
           true, \
-          $(if $(call math_gte_int,$(_sc_v1_pat),$(_sc_v2_pat)),true,)), \
+          $(if $(call math_gt_or_eq,$(_sc_v1_pat),$(_sc_v2_pat)),true,)), \
         )), \
     ))
 endef
