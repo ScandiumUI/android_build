@@ -14,19 +14,6 @@
 # limitations under the License.
 #
 
-# =========================================================================
-# ScandiumUI Version Configuration
-# =========================================================================
-# This file defines the core ScandiumUI version variables consumed by
-# vendor/scandium/config/version.mk and the build system at large.
-#
-# ScandiumUI is built on top of GrapheneOS, which is itself based on AOSP.
-# The base ROM identity is tracked in core/build_id.mk.
-# =========================================================================
-
-# -------------------------------------------------------------------------
-# Version numbers
-# -------------------------------------------------------------------------
 # Major version — increments with each major platform release
 PRODUCT_VERSION_MAJOR := 23
 
@@ -36,9 +23,6 @@ PRODUCT_VERSION_MINOR := 2
 # Patch level — increments with each security / hotfix release
 PRODUCT_VERSION_PATCH := 0
 
-# -------------------------------------------------------------------------
-# Branch and build flags
-# -------------------------------------------------------------------------
 # Active branch codename (matches repo manifest branch)
 SCANDIUM_BRANCH := cookie
 
@@ -46,9 +30,6 @@ SCANDIUM_BRANCH := cookie
 # when the full vendor tree is present. Features gate on this flag.
 SCANDIUM_BUILD ?= false
 
-# -------------------------------------------------------------------------
-# Edition system
-# -------------------------------------------------------------------------
 # Editions define the feature set and branding variant:
 #   Professional (Sc₂O₃) — Full-featured power user experience
 #   Casual       (Sc)    — Balanced daily driver              [default]
@@ -57,10 +38,6 @@ SCANDIUM_EDITION ?= Casual
 
 # Map edition to lowercase for use in file names and prop values
 SCANDIUM_EDITION_LC := $(shell echo $(SCANDIUM_EDITION) | tr A-Z a-z)
-
-# -------------------------------------------------------------------------
-# Build type / release channel
-# -------------------------------------------------------------------------
 #   COOKIE       — Official release builds       (branch: cookie)
 #   SNAPSHOT     — Automated CI snapshot builds
 #   EXPERIMENTAL — Developer / testing builds
@@ -73,16 +50,6 @@ endif
 # Map build type to lowercase
 SCANDIUM_BUILDTYPE_LC := $(shell echo $(SCANDIUM_BUILDTYPE) | tr A-Z a-z)
 
-# -------------------------------------------------------------------------
-# Base ROM identification
-# -------------------------------------------------------------------------
-# Inherited from core/build_id.mk; surfaced here for convenience.
-SCANDIUM_BASE_ROM ?= GrapheneOS
-SCANDIUM_BASE_ROM_VERSION ?= 2025020600
-
-# -------------------------------------------------------------------------
-# GrapheneOS inherited security features
-# -------------------------------------------------------------------------
 # The following flags document which GrapheneOS hardening features are
 # active in this build. They are informational and used by the vendor
 # overlay / build to conditionally enable companion components.
@@ -95,9 +62,6 @@ SCANDIUM_FEATURE_STORAGE_SCOPES := true
 SCANDIUM_FEATURE_CONTACT_SCOPES := true
 SCANDIUM_FEATURE_SECURE_CAMERA := true
 
-# -------------------------------------------------------------------------
-# Computed version strings
-# -------------------------------------------------------------------------
 # Numeric version: <major>.<minor>.<patch>
 SCANDIUM_VERSION_NUMBER := $(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR).$(PRODUCT_VERSION_PATCH)
 
@@ -113,15 +77,9 @@ SCANDIUM_DISPLAY_VERSION := ScandiumUI $(SCANDIUM_VERSION_NUMBER) $(SCANDIUM_EDI
 # Format: ScandiumUI/<edition_lc>/<branch>/<version>:<buildtype_lc>/<build_id>
 SCANDIUM_BUILD_FINGERPRINT := ScandiumUI/$(SCANDIUM_EDITION_LC)/$(SCANDIUM_BRANCH)/$(SCANDIUM_VERSION_NUMBER):$(SCANDIUM_BUILDTYPE_LC)/$(SCANDIUM_BUILD_ID)
 
-# -------------------------------------------------------------------------
-# OTA configuration
-# -------------------------------------------------------------------------
 SCANDIUM_OTA_CHANNEL ?= stable
 SCANDIUM_OTA_BASE_URL ?= https://ota.scandiumui.org
 
-# -------------------------------------------------------------------------
-# System properties (fallback when vendor tree is not present)
-# -------------------------------------------------------------------------
 # Full property definitions live in vendor/scandium/config/version.mk.
 # These base values ensure props exist even for vanilla (no-vendor) builds.
 ifneq ($(SCANDIUM_BUILD),true)
@@ -141,9 +99,15 @@ ifneq ($(SCANDIUM_BUILD),true)
       ro.scandium.feature.gmscompat=$(SCANDIUM_FEATURE_GMSCOMPAT)
 endif
 
-# -------------------------------------------------------------------------
-# Vendor version overlay
-# -------------------------------------------------------------------------
+# Prevent downstream makefiles from silently overwriting core identity.
+.KATI_READONLY := SCANDIUM_VERSION_NUMBER
+.KATI_READONLY := SCANDIUM_DISPLAY_VERSION
+.KATI_READONLY := SCANDIUM_BUILD_FINGERPRINT
+.KATI_READONLY := SCANDIUM_BUILD_DATE
+.KATI_READONLY := SCANDIUM_BUILD_TIMESTAMP
+.KATI_READONLY := SCANDIUM_OTA_CHANNEL
+.KATI_READONLY := SCANDIUM_OTA_BASE_URL
+
 # When SCANDIUM_BUILD=true, vendor/scandium/config/version.mk overrides
 # the computed values above with full version info including display
 # version, fingerprint, suffix, and OTA URL.
