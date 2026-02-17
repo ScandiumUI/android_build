@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2019 The Android Open Source Project
+# Copyright (C) 2024-2026 The ScandiumUI Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +23,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/telephony_product.mk)
 $(call inherit-product-if-exists, frameworks/base/data/sounds/AllAudio.mk)
 
 # Additional settings used in all AOSP builds
+# ScandiumUI: Default ringtone and notification can be overridden
+# by vendor/scandium/config/common.mk when SCANDIUM_BUILD=true.
 PRODUCT_PRODUCT_PROPERTIES += \
     ro.config.ringtone?=Ring_Synth_04.ogg \
     ro.config.notification_sound?=pixiedust.ogg \
