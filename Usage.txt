@@ -2,6 +2,8 @@ Android build system usage:
 
 m [-j] [<targets>] [<variable>=<value>...]
 
+ScandiumUI Build System — based on GrapheneOS / AOSP
+
 
 Ways to specify what to build:
   The common way to specify what to build is to set that information in the
@@ -82,6 +84,12 @@ Variables
                             artifacts.
     OUT_DIR                 The directory in which to place non-distribution
                             artifacts.
+
+  ScandiumUI-specific variables:
+    SCANDIUM_BUILD          Set to 'true' when building with vendor/scandium
+    SCANDIUM_EDITION        Edition variant: Professional, Casual, Academy
+    SCANDIUM_BUILDTYPE      Build type: COOKIE, SNAPSHOT, EXPERIMENTAL
+    SCANDIUM_BRANCH         Branch codename (e.g., 'cookie')
 
   There is not yet known a convenient method by which to discover the full
   list of supported variables. Please mention it here when there is.
